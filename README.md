@@ -116,6 +116,9 @@ The Assassination Phase remains largely unchanged, but there are several new opt
 - Assassinating two people as the Lovers (Tristan and Iseult). 
 - Assassinating no one. 
 
+#### Optional: Weaker Assassination
+If your group feels that Assassination is too powerful or too effective, consider playing with this set of limitations on Assassination. 
+
 In games with fewer than 7 players, Evil is welcome to discuss amongst themselves, but at the end of discussion, the ranking Assassin (e.g. the person who appears first in this list: Mordred, Morgana, Maelegant, Agravaine, Colgrevance, Oberon) makes the final decision of who to Assassinate. 
 
 In games with more than 7 players, the ability of the Evil team to discuss depends on how many missions Failed prior to three missions Succeeding. 
