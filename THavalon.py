@@ -31,7 +31,7 @@ def main():
 	all_evil_roles_in_order = ["Mordred", "Morgana", "Maelegant", "Agravaine", "Colgrevance", "Oberon"]
 
 	# assign the roles in the game
-	good_roles = ["Merlin", "Percival", "Guinevere", "Lancelot", "Lovers"]
+	good_roles = ["Merlin", "Percival", "Guinevere","Lancelot", "Tristan", "Iseult"]
 	evil_roles = ["Mordred", "Morgana", "Maelegant", "Oberon"]
 
 	if num_players >= 7:
@@ -100,34 +100,59 @@ def main():
 		reverse_assignments[player_role] = evil_player
 		evil_roles_in_game.add(player_role)
 		roles_in_game.add(player_role)
-
-	if "Lovers" in good_roles_in_game: 
-		good_roles_in_game.remove("Lovers")
-		# lovers -> tristan
-		good_roles_in_game.add("Tristan")
-		good_roles_in_game.add("Iseult")
-		tristan_player = reverse_assignments["Lovers"]
-		assignments[tristan_player] = "Tristan" 
-		del reverse_assignments["Lovers"]
-		reverse_assignments["Tristan"] = tristan_player
-		# random other good -> iseult
-		good_players_no_tristan = list(set(good_players)) 
-		good_players_no_tristan.remove(tristan_player)
-		iseult_player = str(random.sample(good_players_no_tristan, 1)[0])
-		old_role_iseult = assignments[iseult_player]
-		del reverse_assignments[old_role_iseult]
-		good_roles_in_game.remove(old_role_iseult)
-		assignments[iseult_player] = "Iseult" 
-		reverse_assignments["Iseult"] = iseult_player
-		
-	# lone percival -> galahad
-	if ("Percival" in good_roles_in_game and "Merlin" not in good_roles_in_game and "Morgana" not in evil_roles_in_game and num_players >= 7):
+	
+	# percival_rerolled = False 
+	
+	# lone percival -> new role
+	if ("Percival" in good_roles_in_game and "Merlin" not in good_roles_in_game and "Morgana" not in evil_roles_in_game):
+		percival_player = reverse_assignments["Percival"] 
+		new_percival_roles = list(set(good_roles) - set(good_roles_in_game))
+		random.shuffle(new_percival_roles)
+		# print(new_percival_roles)
+		new_percival_role = new_percival_roles[0]
+		good_roles_in_game.add(new_percival_role)
 		good_roles_in_game.remove("Percival")
-		good_roles_in_game.add("Galahad")
-		percival_player = reverse_assignments["Percival"]
-		assignments[percival_player] = "Galahad" 
+		assignments[percival_player] = new_percival_role
 		del reverse_assignments["Percival"]
-		reverse_assignments["Galahad"] = percival_player
+		reverse_assignments[new_percival_role] = percival_player
+		# print("Percival has been changed to " + new_percival_role)
+		# if percival rerolled, don't allow lovers to reroll into percival.
+	
+	# lone tristan -> new role
+	if ("Tristan" in good_roles_in_game and "Iseult" not in good_roles_in_game):
+		tristan_player = reverse_assignments["Tristan"] 
+		new_tristan_roles = list(set(good_roles) - set(good_roles_in_game))
+		new_tristan_roles.remove("Iseult")
+		# print(new_tristan_roles)
+		if("Merlin" not in good_roles_in_game and "Morgana" not in evil_roles_in_game): 
+			new_tristan_roles.remove("Percival") 
+		random.shuffle(new_tristan_roles)
+		# print(new_tristan_roles)
+		new_tristan_role = new_tristan_roles[0]
+		good_roles_in_game.add(new_tristan_role)
+		good_roles_in_game.remove("Tristan")
+		assignments[tristan_player] = new_tristan_role
+		del reverse_assignments["Tristan"]
+		reverse_assignments[new_tristan_role] = tristan_player
+		# print("Tristan has been changed to " + new_tristan_role)
+	
+	# lone iseult -> new role
+	if ("Iseult" in good_roles_in_game and "Tristan" not in good_roles_in_game):
+		iseult_player = reverse_assignments["Iseult"] 
+		new_iseult_roles = list(set(good_roles) - set(good_roles_in_game))
+		new_iseult_roles.remove("Tristan")
+		# print(new_iseult_roles)
+		if("Merlin" not in good_roles_in_game and "Morgana" not in evil_roles_in_game): 
+			new_iseult_roles.remove("Percival") 
+		random.shuffle(new_iseult_roles)
+		# print(new_tristan_roles)
+		new_iseult_role = new_iseult_roles[0]
+		good_roles_in_game.add(new_iseult_role)
+		good_roles_in_game.remove("Iseult")
+		assignments[iseult_player] = new_iseult_role
+		del reverse_assignments["Iseult"]
+		reverse_assignments[new_iseult_role] = iseult_player
+		# print("Iseult has been changed to " + new_iseult_role)
 	
 	# missing roles
 	missing_roles_good = list(set(good_roles) - set(good_roles_in_game))
@@ -143,6 +168,8 @@ def main():
 			good_roles_for_oberon.remove("Lancelot") 
 		if "Titania" in good_roles_in_game:
 			good_roles_for_oberon.remove("Titania") 
+		if "Arthur" in good_roles_in_game:
+			good_roles_for_oberon.remove("Arthur") 
 		if "Gawain" in good_roles_in_game:
 			good_roles_for_oberon.remove("Gawain") 
 		random.shuffle(good_roles_for_oberon)
@@ -151,7 +178,9 @@ def main():
 	titania_target_role = ""
 	titania_seen = ""
 	if ("Titania" in good_roles_in_game):
-		evil_roles_for_titania = list(set(evil_roles_in_game))  
+		evil_roles_for_titania = list(set(evil_roles_in_game))
+		if "Oberon" in evil_roles_in_game:
+			evil_roles_for_titania.remove("Oberon") 
 		random.shuffle(evil_roles_for_titania)
 		titania_target_role = evil_roles_for_titania[0] 
 		
@@ -349,12 +378,14 @@ def main():
 				iseult = reverse_assignments["Iseult"]
 				truths.append([tristan,iseult])
 				truths.append([iseult,tristan])
+		'''
 		if "Arthur" in good_roles_in_game: 
 			arthur = reverse_assignments["Arthur"]
 			guinevere = reverse_assignments["Guinevere"]
 			good_players_no_arthur = list(set(good_players) - set([arthur,guinevere])) 
 			for good_player in good_players_no_arthur:
 				truths.append([arthur,good_player])
+		'''
 		if "Galahad" in good_roles_in_game: 
 			galahad = reverse_assignments["Galahad"]
 			for evil_player in evil_players_no_mordred:
@@ -417,7 +448,7 @@ def main():
 	if "Arthur" in good_roles_in_game:
 		# determine which roles Arthur sees
 		player_name = reverse_assignments["Arthur"]
-		seen = []
+		'''seen = []
 		for good_role in good_roles_in_game:
 			seen.append(good_role)
 		# oberon 
@@ -426,21 +457,26 @@ def main():
 			random.shuffle(unseen)
 			oberon_seen = unseen[0]
 			seen.append(unseen[0])
+			random.shuffle(seen)
+			seen.pop()
 		random.shuffle(seen)
-
+		'''
 		# and write this info to Arthur's file
 		filename = "game/" + player_name
 		with open(filename, "w") as file:
 			file.write("You are Arthur.\n\n")
-			if oberon_target_role == "Arthur": 
-				file.write("\nYOU HAVE BEEN OBERONED.\nYou see an additional good role that is not in the game.\n\n")
-			file.write("The following good roles are in the game:\n")
+			'''if oberon_target_role == "Arthur": 
+				file.write("\nYOU HAVE BEEN OBERONED.\nYou do not know about one Good role that is in the game.\n\n")
+			'''
+			'''file.write("The following good roles are in the game:\n")
 			for seen_role in seen:
 				if seen_role != "Arthur":
 					file.write(seen_role + "\n")
 			file.write("\n")
+			'''
 			file.write("Ability: Proclamation\n")
 			file.write("If two missions have failed, you may formally reveal that you are Arthur, establishing that you are Good for the remainder of the game. You may still propose and vote on missions, as well as be chosen to be part of a mission team, as per usual.\n")
+			file.write("\nWhen you declare as Arthur, you immediately commence a heads-down, thumbs-out night phase. You may ask for the player who has a certain good role to put their thumb up. You may do this twice before the night phase concludes and regular play resumes. You may only ask for two roles, regardless of whether you see someone for each named roled.\n")
 	
 	if "Gawain" in good_roles_in_game:
 		player_name = reverse_assignments["Gawain"]
@@ -540,7 +576,7 @@ def main():
 					file.write(seen_player + " is a fellow member of the evil council.\n")
 			if "Colgrevance" in evil_roles_in_game:
 				file.write("There is an Colgrevance lurking in the shadows.\n")
-			file.write("\nAbility: Once per game, when you would propose a mission team, you may declare as Morgana and permanently reverse mission order. The next proposal is granted to the person sitting next to the first proposer of the round. Morgana may NOT use this ablity if they have the last proposal of a round.\n");
+			file.write("\nAbility: Once per game, before two missions have failed, instead of your proposal, you may declare as Morgana and permanently reverse mission order. Furthermore, you may choose where the proposals begin (e.g. the person who will receive the next proposal during this round).\n");
 
 	if "Oberon" in evil_roles_in_game:
 		player_name = reverse_assignments["Oberon"]
@@ -698,7 +734,7 @@ def main():
 		with open(bonus_hijack_filename, "a") as file: 
 			file.write("\n \n \nYou also have the following ability, in addition to any other abilities you may possess.")
 			file.write("\nAbility: Should any mission get to the last proposal of the round, after the people on the mission have been named, you may declare as Evil to replace one person on that mission with yourself.\n\n")
-			file.write("Note: You may not use this ability after two missions have already failed. Furthermore, you may only use this ability once per game.\n"); 
+			file.write("Note: You may not use this ability after two missions have already failed. Furthermore, you may only use this ability vim once per game.\n"); 
 				
 	# write start file
 	with open("game/start", "w") as file:
